@@ -85,7 +85,7 @@ if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
             'NAME': 'gis',
             # network alias of container
-            'HOST': 'ca1_net_alias',
+            'HOST': 'ca1_alias',
             'USER': 'docker',
             'PASSWORD': 'docker',
             'PORT': 5432
