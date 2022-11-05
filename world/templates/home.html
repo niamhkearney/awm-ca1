@@ -1,0 +1,16 @@
+map.html{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if user.is_authenticated %}
+            Hello, {{ user.username }}!
+            <p><a href="{% url 'logout' %}">Log Out</a></p>
+        {% else %}
+          <p>You are not logged in! Please log in below.</p>
+          <a href="{% url 'login' %}">Log In</a>
+            <a href="{% url 'register' %}">Log In</a>
+        {% endif %}
+    </div>
+{% endblock %}
