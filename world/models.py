@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class WorldBorder(models.Model):
     # Regular Django fields corresponding to the attributes in the
     # world borders shapefile.
@@ -27,5 +28,6 @@ class WorldBorder(models.Model):
 
 
 class Profile(models.Model):
-    username = models.OneToOneField(User, on_delete=models.CASCADE)
-    location = models.PointField()
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    username = models.CharField(max_length=20, null=True)
+    location = models.PointField(null=True)

@@ -1,4 +1,4 @@
-"""awmca1 URL Configuration
+"""geodjango URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -24,4 +24,6 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('maps/', views.maps, name='maps'),
+    path('signup/', views.register_request, name='signup'),
+    path("locator/", views.location_request, name='locator'),
 ]

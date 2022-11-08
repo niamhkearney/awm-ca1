@@ -159,3 +159,6 @@ LEAFLET_CONFIG = {
     'SCALE': None,
     'OPACITY': 0.5,
 }
+
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
