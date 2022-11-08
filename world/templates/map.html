@@ -7,81 +7,84 @@
     {% load leaflet_tags %}
     {% leaflet_css %}
     {% leaflet_js %}
-    <h1>Hi</h1>
-        <p class="text-center">Oh my god it's a map</p>
+    <div class="container text-center">
+        <h1 class="m-3">World Map</h1>
+        <p>Your current location will be stored in the database everytime you access this page.</p>
 
         <form method="post" action="{% url 'locator'%}">
             {% csrf_token %}
         </form>
-    <div id="map">
-        {% leaflet_map "lab3_v2" %}
 
-        <script>
-            var map = L.map('map').fitWorld();
+        <div id="map" class="container">
+            {% leaflet_map "lab3_v2" %}
 
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
+            <script>
+                var map = L.map('map').fitWorld();
 
-            map.locate({setView: true, maxZoom: 16});
-
-            function onLocationFound(e) {
-                var radius = e.accuracy;
-
-                L.marker(e.latlng).addTo(map)
-
-                console.log("found location, marker added");
-
-                L.circle(e.latlng, radius, {
-                    color: 'green',
-                    fillColor: '#90EE90',
-                    fillOpacity: 0.5,
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 }).addTo(map);
 
-                var pos = e.latlng;
+                map.locate({setView: true, maxZoom: 16});
 
-                console.log("position is " + pos);
+                function onLocationFound(e) {
+                    var radius = e.accuracy;
 
-                update_db(pos);
-            }
+                    L.marker(e.latlng).addTo(map)
 
-            map.on('locationfound', onLocationFound);
+                    console.log("found location, marker added");
 
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
+                    L.circle(e.latlng, radius, {
+                        color: 'green',
+                        fillColor: '#90EE90',
+                        fillOpacity: 0.5,
+                    }).addTo(map);
+
+                    var pos = e.latlng;
+
+                    console.log("position is " + pos);
+
+                    update_db(pos);
+                }
+
+                map.on('locationfound', onLocationFound);
+
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
                         }
                     }
+                    console.log("cookie has been gotten");
+                    return cookieValue;
                 }
-                console.log("cookie has been gotten");
-                return cookieValue;
-            }
 
-            function update_db(pos) {
-                var locString = pos.lng + ", " +
-                pos.lat;
+                function update_db(pos) {
+                    var locString = pos.lng + ", " +
+                    pos.lat;
 
-                const csrftoken = getCookie('csrftoken');
+                    const csrftoken = getCookie('csrftoken');
 
-                $.ajax({
-                    type: "POST",
-                    headers: {
-                        'X-CSRFToken': csrftoken
-                    },
-                    url: {% url 'locator' %},
-                    data: {
-                        point: locString
-                    }
-                });
-                console.log("update db fired, locstring is " + locString);
-            }
-        </script>
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        url: {% url 'locator' %},
+                        data: {
+                            point: locString
+                        }
+                    });
+                    console.log("update db fired, locstring is " + locString);
+                }
+            </script>
+        </div>
     </div>
 {% endblock %}
