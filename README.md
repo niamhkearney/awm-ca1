@@ -22,3 +22,7 @@ exist.
 Map:
 Visiting this page displays a map of the user's current location. The location is logged into the database, in the
 user-profile table's 'location' column, the moment the location has been found.
+
+
+Attempts had been made to deploy the project on docker, after purchasing the domain http://niamhk.online/ 
+A digital ocean droplet was also created.
