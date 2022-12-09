@@ -157,24 +157,3 @@ LEAFLET_CONFIG = {
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
-
-if socket.gethostname() =="DESKTOP-V9JDQU8":
-    DATABASES["default"]["HOST"] = "localhost"
-    DATABASES["default"]["PORT"] = 25432
-else:
-    DATABASES["default"]["HOST"] = f"{docker_config.awmca1}-postgis"
-    DATABASES["default"]["PORT"] = 5432
-
-# Set DEPLOY_SECURE to True only for LIVE deployment
-if docker_config.DEPLOY_SECURE:
-    DEBUG = False
-    TEMPLATES[0]["OPTIONS"]["debug"] = False
-    # ALLOWED_HOSTS = ['.your-domain-name.xyz', 'localhost',]
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-else:
-    DEBUG = True
-    TEMPLATES[0]["OPTIONS"]["debug"] = True
-    ALLOWED_HOSTS = ['*', ]
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False

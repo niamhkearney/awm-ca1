@@ -31,3 +31,9 @@ class Profile(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     username = models.CharField(max_length=20, null=True)
     location = models.PointField(null=True)
+
+
+class DogProfile(models.Model):
+    name = models.CharField(max_length=20)
+    dogimg = models.ImageField(upload_to="images/", blank=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
