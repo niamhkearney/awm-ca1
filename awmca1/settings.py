@@ -77,29 +77,29 @@ WSGI_APPLICATION = 'awmca1.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            # network alias of container
-            'HOST': 'ca1_alias',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 5432
-        }
+# if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#             'NAME': 'gis',
+#             # network alias of container
+#             'HOST': 'ca1_alias',
+#             'USER': 'docker',
+#             'PASSWORD': 'docker',
+#             'PORT': 5432
+#         }
+#     }
+# else:
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'gis',
+        'HOST': 'localhost',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'PORT': 25432
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            'HOST': 'localhost',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 25432
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -157,3 +157,6 @@ LEAFLET_CONFIG = {
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

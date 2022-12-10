@@ -19,7 +19,7 @@
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav">
                           <li class="nav-item">
-                            <a class="nav-link" href="{% url 'maps' %}">Map</a>
+                            <a class="nav-link" href="{% url 'world:map' %}">Map</a>
                           </li>
                     </ul>
                     <div class="flex-row-reverse collapse navbar-collapse" id="collapsibleNavbar">
@@ -31,10 +31,11 @@
                                         <a class="dropdown-item" href="#">Profile</a>
                                     </li>
                                     <li>
+                                        <a class="dropdown-item" href="{% url 'world:moredog' %}">Add a Dog</a>
+                                    </li>
+                                    <li>
                                         <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
                                     </li>
-
-                                    <li>
                                 </ul>
                             </li>
                         </ul>

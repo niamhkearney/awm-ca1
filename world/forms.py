@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import DogProfile
 
 
 # Create your forms here.
@@ -18,3 +19,15 @@ class NewUser(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class NewDog(forms.ModelForm):
+    name = forms.CharField(required=True)
+    dogimg = forms.ImageField
+
+    class Meta:
+        model = DogProfile
+        labels = {
+            "dogimg": "Your dog's profile picture:"
+        }
+        exclude = ("owner",)

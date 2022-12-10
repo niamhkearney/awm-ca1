@@ -9,6 +9,7 @@ from django.contrib import messages
 from world import models
 from world.forms import NewUser
 from world.models import Profile
+from world.forms import NewDog
 
 
 def index(request):
@@ -55,3 +56,16 @@ def location_request(request):
         return JsonResponse({"message": f"Set Location to {point.wkt}."}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
+
+def newdog_request(request):
+    if request.method == "POST":
+        form = NewDog(request.POST, request.FILES)
+        if form.is_valid():
+            dog = form.save(commit=False)
+            dog.owner = request.user
+            dog.save()
+            return redirect("home")
+    form = NewDog()
+    return render(request=request, template_name="dogform.html", context={"newdog_form": form})
+

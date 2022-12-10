@@ -16,14 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import TemplateView
-from world import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('world/', include('world.urls')),
+    path('world/', include('world.urls', namespace='world')),
     path('admin/', admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    path('maps/', views.maps, name='maps'),
-    path('signup/', views.register_request, name='signup'),
-    path("locator/", views.location_request, name='locator'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

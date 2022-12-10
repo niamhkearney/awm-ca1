@@ -13,8 +13,8 @@
         {% else %}
           <p>You are not logged in! Please log in below.</p><br>
           <a href="{% url 'login' %}" class="btn btn-outline-primary">Log In</a>
-            <p>Or, register with the link below.</p>
-            <a href="{% url 'signup' %}" class="btn btn-outline-secondary">Register</a>
+            <p class="p-4">Or, register with the link below.</p>
+            <a href="{% url 'world:signup' %}" class="btn btn-outline-secondary">Register</a>
         {% endif %}
     </div>
 {% endblock %}

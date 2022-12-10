@@ -11,7 +11,7 @@
         <h1 class="m-3">World Map</h1>
         <p>Your current location will be stored in the database everytime you access this page.</p>
 
-        <form method="post" action="{% url 'locator'%}">
+        <form method="post" action="{% url 'world:locator'%}">
             {% csrf_token %}
         </form>
 
@@ -77,7 +77,7 @@
                         headers: {
                             'X-CSRFToken': csrftoken
                         },
-                        url: {% url 'locator' %},
+                        url: {% url 'world:locator' %},
                         data: {
                             point: locString
                         }
