@@ -8,7 +8,7 @@ from django.contrib import messages
 
 from world import models
 from world.forms import NewUser
-from world.models import Profile
+from world.models import Profile, DogProfile
 from world.forms import NewDog
 
 
@@ -58,6 +58,7 @@ def location_request(request):
         return JsonResponse({"error": str(e)}, status=400)
 
 
+@login_required
 def newdog_request(request):
     if request.method == "POST":
         form = NewDog(request.POST, request.FILES)
@@ -69,3 +70,9 @@ def newdog_request(request):
     form = NewDog()
     return render(request=request, template_name="dogform.html", context={"newdog_form": form})
 
+
+@login_required
+def display_dogs(request):
+    if request.method == 'GET':
+        dogprofiles = DogProfile.objects.filter(owner=request.user)
+        return render(request=request, template_name='dogs.html', context={'dogs': dogprofiles})

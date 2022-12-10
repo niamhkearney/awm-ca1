@@ -4,6 +4,13 @@
 
 {% block content %}
    <div class="container align-content-center text-center">
-        <p>no dogs found.... add one dude!!</p>
+        <div class="col-md-4">
+            {% for dog in dogs %}
+                {{ dog.name }}
+                <img src="{{ dog.dogimg.url }}" class="img-responsive" style="width: 100%; float: left;" />
+            {% empty %}
+                <p>no dogs found.... add one dude!!</p>
+            {% endfor %}
+        </div>
    </div>
 {% endblock %}
