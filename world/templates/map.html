@@ -12,9 +12,9 @@
         <h1 class="m-3">World Map</h1>
         <p>Your current location will be stored in the database everytime you access this page.</p>
 
-{#        <form method="post" action="{% url 'world:locator'%}">#}
-{#            {% csrf_token %}#}
-{#        </form>#}
+        <form method="post" action="{% url 'world:route'%}">
+            {% csrf_token %}
+        </form>
 
         <div id="map" class="container">
             <script>
@@ -50,7 +50,12 @@
                 function onMapClick(e) {
                     var marker = L.marker(e.latlng).addTo(map);
                     marker.bindPopup(
-                        'hi'
+                        '<h6>Which Dog would enjoy this route?</h6>' +
+                        '<select name="dogz" id="dogz" class="form-control">' +
+                        '<option value="a">--Select Your Dog--</option>' +
+                        '{% for dog in dogs %}<option value="{{ dog.id }}">{{ dog.name }}</option>' +
+                        '{% endfor %}</select>' +
+                        '<button type="button" onclick="update_db();" id="submitbutton" class="btn btn-primary">Store Route</button>'
                     ).openPopup();
 
                     destination = e.latlng;
@@ -68,29 +73,52 @@
                        }).addTo(map);
                 }
 
-                {#function getCookie(name) {#}
-                {#    let cookieValue = null;#}
-                {#    if (document.cookie && document.cookie !== '') {#}
-                {#        const cookies = document.cookie.split(';');#}
-                {#        for (let i = 0; i < cookies.length; i++) {#}
-                {#            const cookie = cookies[i].trim();#}
-                {#            if (cookie.substring(0, name.length + 1) === (name + '=')) {#}
-                {#                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));#}
-                {#                break;#}
-                {#            }#}
-                {#        }#}
-                {#    }#}
-                {#    console.log("cookie has been gotten");#}
-                {#    return cookieValue;#}
-                {##}
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    console.log("cookie has been gotten");
+                    return cookieValue;
+                }
+
+              function update_db() {
+                    var dogid = document.querySelector('#dogz').value;
+                    if (dogid === 'a') {
+                        alert("No dog selected... If there are no options, add a dog.");
+                      } else {
+
+                        let startString = position.lng + ", " +
+                            position.lat;
+                        let destString = destination.lng + ", " +
+                            destination.lat;
+
+                        const csrftoken = getCookie('csrftoken');
+
+                        $.ajax({
+                            type: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken
+                            },
+                            url: '{% url 'world:route' %}',
+                            data: {
+                                start: startString,
+                                dest: destString,
+                                id: dogid
+                            }
+                        });
+                        console.log("update db fired, route deets are " + startString + destString + "dogid is " + dogid);
+                    }
+                }
             </script>
         </div>
         <button type="button" onclick="getRoute();" class="btn btn-primary">Get Route</button>
-        <select name="dogz" class="form-control">
-            <option value="0">--Select Your Dog--</option>
-            {% for dog in dogs %}
-                <option value="{{ dog.id }}">{{ dog.name }}</option>
-            {% endfor %}
-        </select>
     </div>
 {% endblock %}

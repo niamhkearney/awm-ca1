@@ -31,3 +31,4 @@ class NewDog(forms.ModelForm):
             "dogimg": "Your dog's profile picture:"
         }
         exclude = ("owner",)
+

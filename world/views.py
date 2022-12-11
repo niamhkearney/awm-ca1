@@ -17,6 +17,7 @@ def index(request):
     return render(request, 'base.html')
 
 
+# Returns a list of dogs owned by the user for the dropdown menu in maps.html
 @login_required()
 def maps(request):
     if request.method == 'GET':
@@ -41,25 +42,38 @@ def register_request(request):
     return render(request=request, template_name="registration/signup.html", context={"register_form": form})
 
 
-# @login_required
-# def location_request(request):
-#     try:
-#         user_profile = request.user.profile
-#         if not user_profile:
-#             raise ValueError("Can't get the user's details")
-#
-#         point = request.POST.get('point', None)
-#         point = [float(part) for part in point.split(",")]
-#         point = Point(point, srid=4326)
-#
-#         user_profile.location = point
-#         user_profile.save()
-#
-#         return JsonResponse({"message": f"Set Location to {point.wkt}."}, status=200)
-#     except Exception as e:
-#         return JsonResponse({"error": str(e)}, status=400)
+# Updates the dogprofile where the dogid is equal to what was selected in the dropdown menu
+# of map.html + the owner is the user
+@login_required
+def route_request(request):
+    try:
+        user = request.user
+        if not user:
+            raise ValueError("Can't get the user's details")
+
+        point1 = request.POST.get('start', None)
+        point1 = [float(part) for part in point1.split(",")]
+        point1 = Point(point1, srid=4326)
+
+        print(point1)
+
+        point2 = request.POST.get('dest', None)
+        point2 = [float(part) for part in point2.split(",")]
+        point2 = Point(point2, srid=4326)
+
+        print(point2)
+
+        dog = DogProfile.objects.get(owner=user, id=request.POST.get('id'))
+        dog.start = point1
+        dog.dest = point2
+        dog.save()
+
+        return JsonResponse({"message": f"Set Location to {point1.wkt}."}, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
 
 
+# For adding a new dog
 @login_required
 def newdog_request(request):
     if request.method == "POST":
@@ -73,9 +87,10 @@ def newdog_request(request):
     return render(request=request, template_name="dogform.html", context={"newdog_form": form})
 
 
+# for displaying all the dogs the owner has in dogs.html
+
 @login_required
 def display_dogs(request):
     if request.method == 'GET':
         dogprofiles = DogProfile.objects.filter(owner=request.user)
         return render(request=request, template_name='dogs.html', context={'dogs': dogprofiles})
-

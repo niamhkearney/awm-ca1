@@ -7,7 +7,7 @@
         <div class="container p-2">
             {% for dog in dogs %}
                 {{ dog.name }}
-                <img src="{{ dog.dogimg.url }}" class="img-responsive" style="width: 100%; float: left;" /><br>
+                <img src="{{ dog.dogimg.url }}" class="img-responsive" style="width: 40%;" /><br>
             {% empty %}
                 <p>no dogs found.... add one dude!!</p>
             {% endfor %}

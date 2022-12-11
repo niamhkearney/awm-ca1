@@ -37,3 +37,5 @@ class DogProfile(models.Model):
     name = models.CharField(max_length=20)
     dogimg = models.ImageField(upload_to="images/", blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    start = models.PointField(null=True)
+    dest = models.PointField(null=True)
