@@ -7,17 +7,16 @@
     {% load leaflet_tags %}
     {% leaflet_css %}
     {% leaflet_js %}
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <div class="container text-center">
         <h1 class="m-3">World Map</h1>
         <p>Your current location will be stored in the database everytime you access this page.</p>
 
-        <form method="post" action="{% url 'world:locator'%}">
-            {% csrf_token %}
-        </form>
+{#        <form method="post" action="{% url 'world:locator'%}">#}
+{#            {% csrf_token %}#}
+{#        </form>#}
 
         <div id="map" class="container">
-            {% leaflet_map "lab3_v2" %}
-
             <script>
                 var map = L.map('map').fitWorld();
 
@@ -28,10 +27,14 @@
 
                 map.locate({setView: true, maxZoom: 16});
 
+                var position, destination;
+
                 function onLocationFound(e) {
                     var radius = e.accuracy;
+                    position = e.latlng;
 
-                    L.marker(e.latlng).addTo(map)
+                    var marker = L.marker(e.latlng).addTo(map)
+                    marker.bindPopup("This is your current location!").openPopup();
 
                     console.log("found location, marker added");
 
@@ -40,51 +43,54 @@
                         fillColor: '#90EE90',
                         fillOpacity: 0.5,
                     }).addTo(map);
-
-                    var pos = e.latlng;
-
-                    console.log("position is " + pos);
-
-                    update_db(pos);
                 }
 
-                map.on('locationfound', onLocationFound);
+                map.once('locationfound', onLocationFound);
 
-                function getCookie(name) {
-                    let cookieValue = null;
-                    if (document.cookie && document.cookie !== '') {
-                        const cookies = document.cookie.split(';');
-                        for (let i = 0; i < cookies.length; i++) {
-                            const cookie = cookies[i].trim();
-                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                break;
-                            }
-                        }
-                    }
-                    console.log("cookie has been gotten");
-                    return cookieValue;
+                function onMapClick(e) {
+                    var marker = L.marker(e.latlng).addTo(map);
+                    marker.bindPopup(
+                        'hi'
+                    ).openPopup();
+
+                    destination = e.latlng;
+                    console.log("destination is " + destination);
+                }
+                map.on('click', onMapClick)
+
+                function getRoute() {
+                    L.Routing.control({
+                          waypoints: [
+                            position,
+                            destination
+                          ],
+                        routeWhileDragging: true
+                       }).addTo(map);
                 }
 
-                function update_db(pos) {
-                    var locString = pos.lng + ", " +
-                    pos.lat;
-
-                    const csrftoken = getCookie('csrftoken');
-
-                    $.ajax({
-                        type: "POST",
-                        headers: {
-                            'X-CSRFToken': csrftoken
-                        },
-                        url: {% url 'world:locator' %},
-                        data: {
-                            point: locString
-                        }
-                    });
-                    console.log("update db fired, locstring is " + locString);
-                }
+                {#function getCookie(name) {#}
+                {#    let cookieValue = null;#}
+                {#    if (document.cookie && document.cookie !== '') {#}
+                {#        const cookies = document.cookie.split(';');#}
+                {#        for (let i = 0; i < cookies.length; i++) {#}
+                {#            const cookie = cookies[i].trim();#}
+                {#            if (cookie.substring(0, name.length + 1) === (name + '=')) {#}
+                {#                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));#}
+                {#                break;#}
+                {#            }#}
+                {#        }#}
+                {#    }#}
+                {#    console.log("cookie has been gotten");#}
+                {#    return cookieValue;#}
+                {##}
             </script>
         </div>
+        <button type="button" onclick="getRoute();" class="btn btn-primary">Get Route</button>
+        <select name="dogz" class="form-control">
+            <option value="0">--Select Your Dog--</option>
+            {% for dog in dogs %}
+                <option value="{{ dog.id }}">{{ dog.name }}</option>
+            {% endfor %}
+        </select>
     </div>
 {% endblock %}

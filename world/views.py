@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login
 from django.contrib import messages
@@ -17,9 +17,11 @@ def index(request):
     return render(request, 'base.html')
 
 
+@login_required()
 def maps(request):
-    pass
-    return render(request, 'map.html')
+    if request.method == 'GET':
+        dogcontext = DogProfile.objects.filter(owner=request.user)
+        return render(request=request, template_name='map.html', context={'dogs': dogcontext})
 
 
 @csrf_exempt
@@ -39,23 +41,23 @@ def register_request(request):
     return render(request=request, template_name="registration/signup.html", context={"register_form": form})
 
 
-@login_required
-def location_request(request):
-    try:
-        user_profile = request.user.profile
-        if not user_profile:
-            raise ValueError("Can't get the user's details")
-
-        point = request.POST.get('point', None)
-        point = [float(part) for part in point.split(",")]
-        point = Point(point, srid=4326)
-
-        user_profile.location = point
-        user_profile.save()
-
-        return JsonResponse({"message": f"Set Location to {point.wkt}."}, status=200)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
+# @login_required
+# def location_request(request):
+#     try:
+#         user_profile = request.user.profile
+#         if not user_profile:
+#             raise ValueError("Can't get the user's details")
+#
+#         point = request.POST.get('point', None)
+#         point = [float(part) for part in point.split(",")]
+#         point = Point(point, srid=4326)
+#
+#         user_profile.location = point
+#         user_profile.save()
+#
+#         return JsonResponse({"message": f"Set Location to {point.wkt}."}, status=200)
+#     except Exception as e:
+#         return JsonResponse({"error": str(e)}, status=400)
 
 
 @login_required
@@ -76,3 +78,4 @@ def display_dogs(request):
     if request.method == 'GET':
         dogprofiles = DogProfile.objects.filter(owner=request.user)
         return render(request=request, template_name='dogs.html', context={'dogs': dogprofiles})
+
