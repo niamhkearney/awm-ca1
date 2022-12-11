@@ -10,4 +10,5 @@ urlpatterns = [
     path("moredog/", views.newdog_request, name="moredog"),
     path("dogs/", views.display_dogs, name="dogs"),
     path("addroute/", views.route_request, name="route"),
+    path("petshop/", views.petshop_locator, name="petshop"),
 ]

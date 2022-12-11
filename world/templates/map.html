@@ -1,18 +1,18 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Map!!{% endblock %}
 
-    {% block content %}
+{% block content %}
     {% load leaflet_tags %}
     {% leaflet_css %}
     {% leaflet_js %}
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <div class="container text-center">
         <h1 class="m-3">World Map</h1>
-        <p>Your current location will be stored in the database everytime you access this page.</p>
+        <p>When you set a marker down and click 'get route', directions to that route will be displayed.<br>
+        By clicking on a marker, you can assign that route to a specific dog.</p>
 
-        <form method="post" action="{% url 'world:route'%}">
+        <form method="post" action="{% url 'world:route' %}">
             {% csrf_token %}
         </form>
 
@@ -21,8 +21,8 @@
                 var map = L.map('map').fitWorld();
 
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 }).addTo(map);
 
                 map.locate({setView: true, maxZoom: 16});
@@ -54,23 +54,24 @@
                         '<select name="dogz" id="dogz" class="form-control">' +
                         '<option value="a">--Select Your Dog--</option>' +
                         '{% for dog in dogs %}<option value="{{ dog.id }}">{{ dog.name }}</option>' +
-                        '{% endfor %}</select>' +
+                            '{% endfor %}</select>' +
                         '<button type="button" onclick="update_db();" id="submitbutton" class="btn btn-primary">Store Route</button>'
                     ).openPopup();
 
                     destination = e.latlng;
                     console.log("destination is " + destination);
                 }
+
                 map.on('click', onMapClick)
 
                 function getRoute() {
                     L.Routing.control({
-                          waypoints: [
+                        waypoints: [
                             position,
                             destination
-                          ],
+                        ],
                         routeWhileDragging: true
-                       }).addTo(map);
+                    }).addTo(map);
                 }
 
                 function getCookie(name) {
@@ -89,11 +90,11 @@
                     return cookieValue;
                 }
 
-              function update_db() {
+                function update_db() {
                     var dogid = document.querySelector('#dogz').value;
                     if (dogid === 'a') {
                         alert("No dog selected... If there are no options, add a dog.");
-                      } else {
+                    } else {
 
                         let startString = position.lng + ", " +
                             position.lat;
@@ -117,8 +118,47 @@
                         console.log("update db fired, route deets are " + startString + destString + "dogid is " + dogid);
                     }
                 }
+
+                function showPetShops() {
+                    console.log("In show pet shops");
+
+                    let csrftoken = getCookie('csrftoken');
+
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        url: '{% url 'world:petshop' %}',
+                        data: {
+                            bbox: map.getBounds().toBBoxString()
+                        }
+                    }).done(function (data, status, xhr) {
+
+                        // Handle GeoJSON response from the server.
+                        var geoJsonLayer = L.geoJson(data, {
+                            pointToLayer: function (feature, latlng) {
+                                // Associate each point with the icon we made earlier
+                                return L.marker(latlng);
+                            },
+                            onEachFeature: function (feature, layer) {
+                                // For each feature associate a popup with the 'name' property
+                                layer.bindPopup(feature.properties.name);
+                            },
+                        }).addTo(map);
+
+                    }).fail(function (xhr, status, error) {
+                        var message = "OSM Overpass query failed.";
+                        console.log("Status: " + xhr.status + " " + xhr.responseText);
+                        alert(message);
+                    }).always(function () {
+                    });
+                }
             </script>
         </div>
-        <button type="button" onclick="getRoute();" class="btn btn-primary">Get Route</button>
+        <div class="container p-3">
+            <button type="button" onclick="getRoute();" class="btn btn-primary">Get Route</button>
+            <button type="button" onclick="showPetShops();" class="btn btn-primary">Nearest Pet Shops</button>
+        </div>
     </div>
 {% endblock %}

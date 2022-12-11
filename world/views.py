@@ -1,10 +1,14 @@
+import json
+
+import overpy
 from django.contrib.auth.decorators import login_required
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login
 from django.contrib import messages
+from osgeo_utils.gdal2tiles import data
 
 from world import models
 from world.forms import NewUser
@@ -94,3 +98,90 @@ def display_dogs(request):
     if request.method == 'GET':
         dogprofiles = DogProfile.objects.filter(owner=request.user)
         return render(request=request, template_name='dogs.html', context={'dogs': dogprofiles})
+
+
+def petshop_locator(request):
+    try:
+        # Create overpass API object
+        api = overpy.Overpass()
+
+        b_box = request.POST.get("bbox", None)
+
+        if b_box:
+            bbox = b_box.split(",")
+            shuffled_bbox = [bbox[1], bbox[0], bbox[3], bbox[2]]
+            mod_bbox = [float(item) for item in shuffled_bbox]
+            b_box = mod_bbox
+
+        # finding petshops
+        searchres = api.query(f"""
+            [out:json][timeout:25];
+            (
+              node["shop"="pet"]{tuple(b_box)};
+              way["shop"="pet"]{tuple(b_box)};
+              relation["shop"="pet"]{tuple(b_box)};
+            );
+            out body;
+            >;
+            out skel qt;
+            """)
+
+        geojson_result = {
+            "type": "FeatureCollection",
+            "features": [],
+        }
+
+        nodes_in_way = []
+
+        for way in searchres.ways:
+            geojson_feature = {
+                "type": "Feature",
+                "id": "",
+                "geometry": "",
+                "properties": {}
+            }
+            poly = []
+            for node in way.nodes:
+                # Record the nodes and make the polygon
+                nodes_in_way.append(node.id)
+                poly.append([float(node.lon), float(node.lat)])
+
+            try:
+                poly = Polygon(poly)
+            except:
+                continue
+            geojson_feature["id"] = f"way_{way.id}"
+            geojson_feature["geometry"] = json.loads(poly.centroid.geojson)
+            geojson_feature["properties"] = {}
+
+            for k, v in way.tags.items():
+                geojson_feature["properties"][k] = v
+
+            geojson_result["features"].append(geojson_feature)
+
+        # Process results that are 'nodes'
+        for node in searchres.nodes:
+            # Ignore nodes which are also in a 'way' as we will have already processed the 'way'.
+            if node.id in nodes_in_way:
+                continue
+            geojson_feature = None
+            geojson_feature = {
+                "type": "Feature",
+                "id": "",
+                "geometry": "",
+                "properties": {}
+            }
+
+            point = Point([float(node.lon), float(node.lat)])
+            geojson_feature["id"] = f"node_{node.id}"
+            geojson_feature["geometry"] = json.loads(point.geojson)
+            geojson_feature["properties"] = {}
+            for k, v in node.tags.items():
+                geojson_feature["properties"][k] = v
+
+            geojson_result["features"].append(geojson_feature)
+
+            # Return the complete GeoJSON structure.
+        return JsonResponse(geojson_result, status=200)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
