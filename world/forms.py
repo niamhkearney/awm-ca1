@@ -30,5 +30,5 @@ class NewDog(forms.ModelForm):
         labels = {
             "dogimg": "Your dog's profile picture:"
         }
-        exclude = ("owner",)
+        fields = ("name", "dogimg")
 

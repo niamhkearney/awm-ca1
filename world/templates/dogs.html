@@ -5,11 +5,14 @@
 {% block content %}
    <div class="container align-content-center text-center">
         <div class="container p-2">
+        <h2>My Dogs</h2><hr>
             {% for dog in dogs %}
-                {{ dog.name }}
-                <img src="{{ dog.dogimg.url }}" class="img-responsive" style="width: 40%;" /><br>
+                <h4>{{ dog.name }}</h4> <br>
+                <img src="{{ dog.dogimg.url }}" class="img-responsive" style="width: 40%;height: 40%"/><br>
+                <b>Favourite Walking route: </b><p>{{ dog.start }} to {{ dog.dest }}</p><hr>
             {% empty %}
-                <p>no dogs found.... add one dude!!</p>
+                <p>No dogs found.. You'll have to add one!</p>
+                <a class="btn btn-primary" href="{% url 'world:moredog' %}">Add your Dog!</a>
             {% endfor %}
         </div>
    </div>

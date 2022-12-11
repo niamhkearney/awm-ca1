@@ -3,18 +3,24 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+{% load static %}
     <div class="container align-content-center text-center">
+        <div class="container">
+        <img src="{% static 'walkdog.png' %}" class="img-responsive imgs"/><br>
         <h1 class="p-3">Welcome to Walk-Planner.</h1>
-        <p>The perfect website for when you want to look at a map and know where you are. In case you didn't know...</p><br>
+        <p>Plan walks for your dogs by using our map!<br>But first, create a profile for your dog.</p><br>
+        </div>
         <hr>
+        <div class="container p-4">
         {% if user.is_authenticated %}
             <p>Hello, {{ user.username }}!</p>
             <p><a href="{% url 'logout' %}">Log Out</a></p>
         {% else %}
-          <p>You are not logged in! Please log in below.</p><br>
+          <p>You are not logged in! Please log in below.</p>
           <a href="{% url 'login' %}" class="btn btn-outline-primary">Log In</a>
-            <p class="p-4">Or, register with the link below.</p>
+            <p>Or, register with the link below.</p>
             <a href="{% url 'world:signup' %}" class="btn btn-outline-secondary">Register</a>
         {% endif %}
+        </div>
     </div>
 {% endblock %}
