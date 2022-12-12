@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load pwa %}
 <head>
-    {% load static %}
+{% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href={% static '/style.css' %}>
@@ -9,6 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    {% progressive_web_app_meta %}
+    <link rel="manifest" href="manifest.json"/>
     <title>{% block title %}Maps. Just maps.{% endblock %}</title>
 </head>
 <body>
@@ -28,9 +31,6 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Hello, {{user.username}}</a>
                                 <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="#">Profile</a>
-                                    </li>
                                     <li>
                                         <a class="dropdown-item" href="{% url 'world:dogs' %}">My Dogs</a>
                                     </li>

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'crispy_forms',
     'leaflet',
+    'pwa',
     'world.apps.WorldConfig',
 ]
 
@@ -74,28 +75,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'awmca1.wsgi.application'
 
-# if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#         'NAME': 'gis',
-#         # network alias of container
-#         'HOST': 'ca1_alias',
-#         'USER': 'docker',
-#         'PASSWORD': 'docker',
-#         'PORT': 5432
-#     }
-# }
-# else:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'gis',
-        'HOST': 'localhost',
-        'USER': 'docker',
-        'PASSWORD': 'docker',
-        'PORT': 25432
-    }
+if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'gis',
+            # network alias of container
+            'HOST': 'ca1_alias',
+            'USER': 'docker',
+            'PASSWORD': 'docker',
+            'PORT': 5432
+        }
+}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'gis',
+            'HOST': 'localhost',
+            'USER': 'docker',
+            'PASSWORD': 'docker',
+            'PORT': 25432
+        }
 }
 
 # Password validation
@@ -157,3 +158,35 @@ LOGOUT_REDIRECT_URL = "home"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
+
+PWA_APP_NAME = 'walkplanner'
+PWA_APP_DESCRIPTION = "plan walks for your dog PWA"
+PWA_APP_THEME_COLOR = '#000000'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/home'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': 'static/walkdog.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': 'static/walkdog.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': 'static/walkdog.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
