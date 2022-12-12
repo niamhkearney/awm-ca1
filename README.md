@@ -40,3 +40,9 @@ The location position and the marker position are stored along with that dog's d
 
 ![image](https://user-images.githubusercontent.com/71713529/207009662-768331fe-94a1-49fc-af27-19563752fa68.png)
 
+##Deployment
+While a digital ocean droplet was set up and a domain name was purchased on nameCheap (niamhk.online) deployment was not achieved. This was due to an error with the django-pwa package that would occur when attempting to run the built image of the project.
+![image](https://user-images.githubusercontent.com/71713529/207026338-010cdb39-ad16-42bc-8ab4-ddf98e5f7a42.png)
+Upon investigation this 'django.conf.urls.url()' is deprecated in Django 4, which is what was in use for this assignment. To deploy, this would entail taking the PWA functionality out of the project and rebuilding the image, but as PWA is a requirement for this assignment it was decided that the PWA functionality was more necessary than deployment.
+
+
