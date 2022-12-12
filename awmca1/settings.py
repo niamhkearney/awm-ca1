@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 import socket
+import dj_database_url
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = config('SECRET_KEY')
 SECRET_KEY = 'django-insecure-^jt=n81ko39=fz0@i8m!8b(@%-(30jnnbvs_g71rwpnv(l_oua'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# DEBUG = config('DEBUG', default=False, cast=bool)
+
 ALLOWED_HOSTS = []
+
+# if config('DEPLOY_SECURE'):
+#     DEBUG = False
+#     CSRF_COOKIE_SECURE = True
+#     SESSION_COOKIE_SECURE = True
+#     ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+#     CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=lambda v: [s.strip() for s in v.split(',')])
+# else:
+#     DEBUG = True
+#     CSRF_COOKIE_SECURE = False
+#     SESSION_COOKIE_SECURE = False
+#     ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -75,28 +92,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'awmca1.wsgi.application'
 
-if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            # network alias of container
-            'HOST': 'ca1_alias',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 5432
-        }
-}
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            'HOST': 'localhost',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 25432
-        }
+# if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
+#     DATABASES = {'default': config('DATABASE_DOCKER', default=None, cast=dj_database_url.parse)}
+# else:
+#     DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
+
+# if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#             'NAME': 'gis',
+#             # network alias of container
+#             'HOST': 'ca1_alias',
+#             'USER': 'docker',
+#             'PASSWORD': 'docker',
+#             'PORT': 5432
+#         }
+# }
+# else:
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'gis',
+        'HOST': 'localhost',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'PORT': 25432
+    }
 }
 
 # Password validation
